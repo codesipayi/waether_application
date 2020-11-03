@@ -6,7 +6,8 @@ console.log(process.env);
 const BASE_URL = `https://api.openweathermap.org/data/2.5/weather?`;
 const App = () => {
   const [city, setCity] = useState('sirsi');
-  const [temparature, setTemparature] = useState('');
+  const [error, setError] = useState(null);
+  const [temparature, setTemparature] = useState(null);
 
   useEffect(() => {
     getLocation();
@@ -40,14 +41,16 @@ const App = () => {
 
     return response;
   }
-  
+
   const updateCurrentLocationTemp = async (lat, lon) => {
     let url = BASE_URL + `lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
     let data = await hitApi(url);
-    if (data.cod === 200)
+    if (data.cod === 200) {
+      setError(null);
       setTemparature(data.main.temp);
+    }
     else
-      setTemparature(data.message);
+      setError(data.message);
   }
 
   const handleSearch = async (e) => {
@@ -57,7 +60,7 @@ const App = () => {
     if (data.cod === 200)
       setTemparature(data.main.temp);
     else
-      setTemparature(data.message);
+      setError(data.message);
   }
   return (
     <div>
@@ -68,10 +71,18 @@ const App = () => {
           <button className="searchbutton" type="submit" onClick={handleSearch}>Search!</button>
         </form>
       </div>
-      {temparature &&
+      {temparature && !error &&
         <div className="weatherResult">
           <div className="resultBox">
+            <h5>Temperature:</h5>
             <p>{temparature}C</p>
+          </div>
+        </div>
+      }
+      {error &&
+        <div className="weatherResult">
+          <div className="resultBox">
+            <p>{error}</p>
           </div>
         </div>
       }
