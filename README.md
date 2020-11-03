@@ -1,1 +1,1 @@
-# waether_application
+# weather_application
